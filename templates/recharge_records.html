@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title> 充值记录查询 </title>
+    <meta name="keywords" content="recharges">
+    <meta name="description" content="充值记录">
+    <link rel="stylesheet" href="../static/vendors/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/font-awesome/css/font-awesome.min.css">
+    <link href="../static/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="../static/css/style.min.css?v=4.1.0" rel="stylesheet">
+
+</head>
+
+<body class="nav-sm">
+<div class="container body">
+
+    <!-- Panel Other -->
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+
+                <div class="x_panel">
+                    <!-- Example Events -->
+                    <div class="example-wrap">
+                        <h1>Recharges</h1>
+                        <div id="toolbar">
+                            <div class="btn-group">
+                                <form method="get" class="form-horizontal" id="queryform">
+                                <input type="text" class="form-control input-outline" name="tradeNo" placeholder="输入交易单号刷新查询">
+                            </form>
+                            </div>
+                        </div>
+                            <table id="rechargesTable" data-mobile-responsive="true">
+                                <thead>
+                                <tr>
+                                    <th data-field="check" ></th>
+                                    <th data-field="id" >ID</th>
+                                    <th data-field="out_trade_no">对外暴露的交易号</th>
+                                    <th data-field="user">User</th>
+                                    <th data-field="amount">金额(分)</th>
+                                    <th data-field="score">充值KB金额</th>
+                                    <th data-field="status">支付状态</th>
+                                    <th data-field="pay_type">支付类型</th>
+                                    <th data-field="created_at">Created_at</th>
+                                    <th data-field="finished_at">订单完成时间</th>
+                                    <th data-field="msg" class="text-nowrap">第三方支付返回数据</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script src="../static/vendors/jquery/dist/jquery.js"></script>
+<script type="text/javascript" src="../static/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+
+<!-- Bootstrap table -->
+<script src="../static/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="../static/js/plugins/bootstrap-table/bootstrap-table-export.js"></script>
+<script src="../static/js/plugins/bootstrap-table/tableExport.js"></script>
+<script src="../static/js/plugins/bootstrap-table/bootstrap-table-mobile.js"></script>
+<script src="../static/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<!-- Peity -->
+<script src="../static/js/recharges-custom.js"></script>
+
+
+</body>
+
+</html>

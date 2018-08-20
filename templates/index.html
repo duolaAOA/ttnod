@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>微信对账单</title>
+
+    <script src="../static/laydate/laydate.js"></script>
+    <script src="../static/js/pagination.js"></script>
+    <script type="text/javascript" src="../static/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../static/vendors/jquery/dist/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="../static/vendors/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../static/css/custom.min.css">
+
+</head>
+
+
+<body style="background-color: transparent; color: black" >
+
+<div class="container">
+    <div class="jumbotron" style="background-color: #C6E2FF; ">
+        <h5>对账单只显示最近7天的记录，如果筛选了对账日期，只会显示当前对账日期的记录</h5>
+        <h5>注意:</h5>
+        <h5>1.如果充值记录和积分记录的总积分不一致，说明数据记录有误！</h5>
+        <h5>2.总金额应该是总积分的6倍！</h5>
+        <h5>3.微信会在早上10点更新昨天的对账单，请及时下载更新查看，保证总交易额和总金额一致！</h5>
+    </div>
+
+    <form class="form-inline" method="POST">
+        <div class="form-group" style="vertical-align: top">
+            <label for="exampleInputName2" style="font-size: 15px">对账日期：&nbsp;&nbsp;</label>
+            <span>
+                <input type="text" class="form-control" id="form_datetime" value="" name="datetime" placeholder="请输入查找日期">
+            </span>
+        </div>
+            <button type="submit" class="btn btn-default" value="">
+                搜索
+            </button>
+    <div class="form-group" style="vertical-align: top">
+            <input type="text" id="st" class="form-control" name="st" placeholder="开始日期" required="required">
+            <input type="text" id="et" class="form-control" name="et" placeholder="截止日期" required="required">
+    </div>
+            <button id="btn_search" type="button" onclick="download()" class="btn btn-default queryButton glyphicon glyphicon glyphicon-save">微信账单下载</button>
+
+    </form>
+
+
+
+
+    <div>
+        <table class="table table-hover table-responsive">
+            <caption style="font-weight: bold; font-size: 20px;color: black">总览</caption>
+            <tr>
+                <th align="left">ID</th>
+                <th align="left">总金额</th>
+                <th align="left">总积分</th>
+                <th align="left">交易笔数</th>
+            </tr>
+            <tr>
+                <th>充值记录</th>
+                <th>{{ recharge_total_amount }}</th>
+                <th>{{ recharge_total_score }}</th>
+                <th>{{ recharge_total_count }}</th>
+            </tr>
+            <tr>
+                <th>积分记录</th>
+                <th>无</th>
+                <th>{{ score_total_score }}</th>
+                <th>{{ score_total_count }}</th>
+            </tr>
+        </table>
+
+        <table class="table table-hover table-responsive">
+            {% if not specify_time %}
+                <caption style="font-weight: bold; font-size: 20px; color: black;">近一周总览</caption>
+            {% else %}
+                <caption style="font-weight: bold; font-size: 20px; color: black;">当前总览</caption>
+            {% end %}
+            <tr>
+                <th align="left">ID</th>
+                <th align="left">总金额</th>
+                <th align="left">总积分</th>
+                <th align="left">交易笔数</th>
+            </tr>
+            <tr>
+                <th>充值记录</th>
+                <th>{{ recharge_week_total_amount }}</th>
+                <th>{{ recharge_week_total_score }}</th>
+                <th>{{ recharge_week_total_count }}</th>
+            </tr>
+            <tr>
+                <th>积分记录</th>
+                <th>无</th>
+                <th>{{ score_week_total_score }}</th>
+                <th>{{ score_week_total_count }}</th>
+            </tr>
+        </table>
+
+        <table class="table table-hover table-responsive">
+            {% if not specify_time %}
+                <caption style="font-weight: bold; font-size: 20px; color: black;">近一周充值记录</caption>
+            {% else %}
+                <caption style="font-weight: bold; font-size: 20px; color: black;">当前充值记录</caption>
+            {% end %}
+            <tr>
+                <th align="left">Recharge ID</th>
+                <th align="left">交易号</th>
+                <th align="left">User</th>
+                <th align="left">总额 （分）</th>
+                <th align="left">Score</th>
+                <th align="left">支付状态</th>
+                <th align="left">支付类型</th>
+                <th align="left">created_at</th>
+                <th align="left">finished_at</th>
+            </tr>
+            {% for record_obj in week_recharge_record_obj%}
+                <tr>
+                    <th style="color: #0033FF">{{ record_obj.get("_id") }}</th>
+                    <th>{{ record_obj.get("out_trade_no") }}</th>
+                    <th>{{ record_obj["userinfo"][0].get("username","") }}</th>
+                    <th>{{ record_obj.get("amount") }}</th>
+                    <th>{{ record_obj.get("score") }}</th>
+                    <th>{{ record_obj.get("status") }}</th>
+                    <th>{{ record_obj.get("pay_type") }}</th>
+                    <th>{{ record_obj.get("created_at") }}</th>
+                    <th>{{ record_obj.get("finished_at") }}</th>
+                </tr>
+            {% end %}
+
+        </table>
+    </div>
+</div>
+
+        <script>
+    laydate.render({
+        elem: '#form_datetime'
+    });
+
+    laydate.render({
+    elem: '#st'
+    });
+    laydate.render({
+    elem: '#et'
+    });
+
+    document.write(Pagination({
+    prevButton: '上一页',
+    nextButton: '下一页'
+    }));
+
+
+ function download() {
+    var url = '/trade/bill/ALL';
+    var xmlhttp = new XMLHttpRequest();
+    var date = new Date();
+    var month = date.getMonth() + 1;
+    if (month < 10){
+        month = "0" + month;
+    }
+    var currentdate = date.getFullYear() + "-" + month + "-" + date.getDate();
+    var start_date = $("input[name='st']").val();
+    var end_date = $("input[name='et']").val();
+    if(start_date.length===0||end_date.length===0){
+        alert("日期不能为空！");
+        return false;
+    }
+    if(start_date > end_date){
+        alert("开始日期不能大于截止日期！");
+        return false;
+    }
+    if (end_date > currentdate){
+        alert("截止日期不能大于当前日期！");
+        return false;
+    }
+    alert("正在下载,请稍等......");
+    xmlhttp.open('POST', url, true);
+    xmlhttp.responseType = "blob";
+    xmlhttp.onload = function () {
+        // 请求完成
+        if (this.readyState===4&&this.status >= 200&&this.status<300) {
+            // 返回200
+
+            var blob = this.response;
+            var reader = new FileReader();
+            reader.readAsDataURL(blob);    // 转换为base64，可以直接放入a表情href
+
+            reader.onload = function (e) {
+                // 转换完成，创建一个a标签用于下载
+                var a = document.createElement('a');
+                a.download = start_date + '--' + end_date + '微信对账单.xlsx';
+                a.href = e.target.result;
+                $("body").append(a);    // 修复firefox中无法触发click
+                a.click();
+                $(a).remove();
+            }
+        }
+        else {
+            alert("下载失败: " + xmlhttp.status);
+        }
+    };
+    // 发送ajax请求
+    xmlhttp.send(JSON.stringify(
+        {
+            "st": start_date,
+            "et": end_date
+        }
+        ))
+    }
+</script>
+}));
+</body>
+</html>
